@@ -1,5 +1,8 @@
 #!/bin/bash
 
+GN='\033[0;32m'
+NC='\033[0m'
+
 if [ -z "$IP" ]; then
 	echo "Error: please set the IP envrionment variable for the test device."
 	exit 1
@@ -10,10 +13,11 @@ if [ -z "$SSHPASS" ]; then
 	exit 1
 fi
 
-echo "Building for ARM64 device ..."
+echo -e "${GN}Building for ARM64 RPI3 ...${NC}"
 CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build ./cmd/purenet
 
-echo "Testing on device with IP=$IP ..."
+echo -e "${GN}Testing on device with IP=$IP ...${NC}"
+sshpass -e ssh -q -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" root@$IP "/usr/bin/killall purenet 2> /dev/null"
 sshpass -e scp -q -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" purenet root@$IP:/root/
 sshpass -e ssh -q -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" root@$IP /bin/bash -c "/root/purenet"
 
