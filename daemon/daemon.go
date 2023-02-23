@@ -139,20 +139,20 @@ func HandleEvent(s *StateMachine) {
 
 			wifiClient, err := wifi.New()
 			if err != nil {
-				fmt.Printf("WIFI NL802.11 handle failed ...(%v)\n", err)
-				os.Exit(1)
-			}
-			defer wifiClient.Close()
+				fmt.Printf("WIFI NL80211 API unavailable ...(%v)\n", err)
+			} else {
+				defer wifiClient.Close()
 
-			// Is this a WIFI interface?
-			ifaces, err := wifiClient.Interfaces()
-			if err != nil {
-				fmt.Printf("Cannot enumarate WIFI interfaces ...(%v)\n", err)
-				os.Exit(1)
-			}
-			for _, wiface := range ifaces {
-				if wiface.Name == s.currentIface {
-					s.wifiInterface = wiface
+				// Is this a WIFI interface?
+				ifaces, err := wifiClient.Interfaces()
+				if err != nil {
+					fmt.Printf("Cannot enumarate WIFI interfaces ...(%v)\n", err)
+					os.Exit(1)
+				}
+				for _, wiface := range ifaces {
+					if wiface.Name == s.currentIface {
+						s.wifiInterface = wiface
+					}
 				}
 			}
 
