@@ -315,25 +315,24 @@ func HandleEvent(s *StateMachine) {
 		}
 
 	case STATE_IFACE_RESET:
-		// If its up, remove the address, which will remove the route
+		// We are admin up at this point, remove the address, which will remove the route
+		fmt.Println("Removing IP address/route ...")
+		err := removeInterfaceAddr(s.currentIface)
+		if err != nil {
+			fmt.Printf("Interface failure ...(%v)\n", err)
+			s.cstate = STATE_NO_IFACE
+			break
+		}
+
 		up, err := state_up(s.currentIface)
 		if err != nil {
 			fmt.Printf("Interface failure ...(%v)\n", err)
 			s.cstate = STATE_NO_IFACE
 			break
 		}
-	        if up == true {
-			fmt.Println("Removing IP address/route ...")
-			err := removeInterfaceAddr(s.currentIface)
-			if err != nil {
-				fmt.Printf("Interface failure ...(%v)\n", err)
-				s.cstate = STATE_NO_IFACE
-				break
-			}
-		}
 
 		// Disconnect from the AP if we are on WIFI
-		if s.wifiInterface != nil {
+		if s.wifiInterface != nil && up == true {
 			wifiClient, err := wifi.New()
 			if err != nil {
 				fmt.Printf("WIFI NL802.11 handle failed ...(%v)\n", err)
