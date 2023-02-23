@@ -109,7 +109,7 @@ const STATE_TIMEOUT = (time.Second * 10)
 
 // If internet stops working, retry the same interface before selecting the
 // next available interface
-const NO_INTERNET_RETRIES = 3
+const NO_INTERNET_RETRIES = 1
 
 // Network Event Handler (and state machine)
 func HandleEvent(s *StateMachine) {
@@ -359,7 +359,7 @@ func HandleEvent(s *StateMachine) {
 		if s.interfaceRetries < NO_INTERNET_RETRIES && s.interfaceHadInternet {
 			s.interfaceRetries += 1
 
-                        fmt.Printf("Recovery attempt %d using same interface ...\n", s.interfaceRetries)
+                        fmt.Printf("Recovery attempt %d/%d using same interface ...\n", s.interfaceRetries, NO_INTERNET_RETRIES)
                         s.cstate = STATE_IFACE
 			break
 		}
